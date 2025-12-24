@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit"
+      xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:workday="http://www.mulesoft.org/schema/mule/workday"
+      xmlns:sap="http://www.mulesoft.org/schema/mule/sap"
+      xmlns:s3="http://www.mulesoft.org/schema/mule/s3"
+      xmlns:servicenow="http://www.mulesoft.org/schema/mule/servicenow"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core ./knowledge-base/schemas/mule-core.xsd
+        http://www.mulesoft.org/schema/mule/apikit ./knowledge-base/schemas/mule-apikit.xsd
+        http://www.mulesoft.org/schema/mule/secure-properties ./knowledge-base/schemas/mule-secure-properties.xsd
+        http://www.mulesoft.org/schema/mule/http ./knowledge-base/schemas/mule-http.xsd
+        http://www.mulesoft.org/schema/mule/workday ./knowledge-base/schemas/mule-workday.xsd
+        http://www.mulesoft.org/schema/mule/sap ./knowledge-base/schemas/mule-sap.xsd
+        http://www.mulesoft.org/schema/mule/s3 ./knowledge-base/schemas/mule-s3.xsd
+        http://www.mulesoft.org/schema/mule/servicenow ./knowledge-base/schemas/mule-servicenow.xsd">
+  <configuration defaultErrorHandler-ref="globalErrorHandler"></configuration>
+  <apikit:config name="apiSalesforceSapiConfig" raml="api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" doc:name="APIKit Router Config"></apikit:config>
+  <configuration-properties doc:name="Configuration properties" file="properties/common-properties.yaml"></configuration-properties>
+  <secure-properties:config name="Secure_Properties_Config" file="properties/secure-${mule.env}.yaml" key="${encryption.key}" doc:name="Secure Properties Config"></secure-properties:config>
+  <http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="http-listener-config-001">
+    <http:listener-connection host="${http.host}" port="${http.port}" protocol="${http.protocol}" doc:id="doc-4c490b94" readTimeout="${http.timeout}"></http:listener-connection>
+  </http:listener-config>
+  <workday:config name="Workday_Config" doc:name="Workday Config" doc:id="workday-config-001">
+    <workday:basic-authentication-api-connection userName="${secure::workday.userName}" password="${secure::workday.password}" tenantName="${workday.tenant}" doc:id="doc-27c08108" hostName="${workday.hostName}"></workday:basic-authentication-api-connection>
+  </workday:config>
+  <sap:sap-config name="SAP_Config" doc:name="SAP Config" doc:id="sap-config-001">
+    <sap:simple-connection-provider-connection applicationServerHost="${sap.host}" systemNumber="${sap.system.number}" client="${sap.client}" username="${secure::sap.username}" password="${secure::sap.password}" language="EN" doc:id="doc-42c87b9e"></sap:simple-connection-provider-connection>
+  </sap:sap-config>
+  <s3:config name="Amazon_S3_Configuration" doc:name="Amazon S3 Configuration" doc:id="s3-config-001">
+    <s3:connection accessKey="${secure::s3.access.key}" secretKey="${secure::s3.secret.key}" region="${s3.region}" doc:id="doc-f810c71b"></s3:connection>
+  </s3:config>
+  <servicenow:config name="ServiceNow_Config" doc:name="ServiceNow Config" doc:id="servicenow-config-001">
+    <servicenow:basic-connection username="${secure::servicenow.username}" password="${secure::servicenow.password}" serviceAddress="${servicenow.service.address}" doc:id="doc-01e67f01"></servicenow:basic-connection>
+  </servicenow:config>
+
+</mule>

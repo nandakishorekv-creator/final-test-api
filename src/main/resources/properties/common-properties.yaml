@@ -1,0 +1,18 @@
+http:
+  host: ""
+  port: ""
+  protocol: ""
+  timeout: ""
+workday:
+  tenant: ""
+  hostName: ""
+sap:
+  host: ""
+  system:
+    number: ""
+  client: ""
+s3:
+  region: ""
+servicenow:
+  service:
+    address: ""

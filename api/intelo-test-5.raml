@@ -1,0 +1,31 @@
+#%RAML 1.0
+title: intelo-test-5
+version: v1
+baseUri: https://api.example.com/{version}
+mediaType: application/json
+
+/employees:
+  put:
+    description: "Update employees collection"
+    displayName: "Update Employees"
+    body:
+      application/json:
+        type: !include resources/schemas/PutEmployeesRequest.raml
+        example: !include resources/examples/PutEmployeesRequest.json
+    responses:
+      200:
+        body:
+          application/json:
+            type: !include resources/schemas/PutEmployeesResponse.raml
+            example: !include resources/examples/PutEmployeesResponse.json
+
+/health:
+  get:
+    description: "Retrieve all health"
+    displayName: "Get Health"
+    responses:
+      200:
+        body:
+          application/json:
+            type: !include resources/schemas/GetHealthResponse.raml
+            example: !include resources/examples/GetHealthResponse.json

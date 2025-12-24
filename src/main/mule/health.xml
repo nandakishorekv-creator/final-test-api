@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core ./knowledge-base/schemas/mule-core.xsd
+        http://www.mulesoft.org/schema/mule/ee/core ./knowledge-base/schemas/mule-core.xsd">
+
+  <sub-flow name="readiness-check-subflow" doc:name="Readiness Check" doc:id="fff869e4-8311-bf07-7ba5-8fba129630d7">
+    <ee:transform doc:name="Readiness Response" doc:id="6a867d3d-3837-b897-3418-20eaa358ca47">
+      <ee:message>
+        <ee:set-payload>
+          %dw 2.0
+output application/json
+---
+{
+	status: "up",
+	timestamp: now() as String
+}
+        </ee:set-payload>
+      </ee:message>
+    </ee:transform>
+  </sub-flow>
+
+</mule>

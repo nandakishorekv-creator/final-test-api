@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core ./knowledge-base/schemas/mule-core.xsd
+        http://www.mulesoft.org/schema/mule/http ./knowledge-base/schemas/mule-http.xsd
+        http://www.mulesoft.org/schema/mule/apikit ./knowledge-base/schemas/mule-apikit.xsd">
+
+  <flow name="intelo-test-5-api-main" doc:name="intelo-test-5 API Main" doc:id="79122edb-bd37-a80b-51f4-e2a65036b205">
+    <http:listener path="/api/${api.majorVersion}/*" config="HTTP_Listener_config" doc:name="HTTP Listener" doc:id="2083c927-6ed4-ff74-34b6-c9858c048fbb">
+      <http:response statusCode="#[vars.httpStatus default 200]">
+        <http:headers>
+          #[vars.outboundHeaders default {}]
+        </http:headers>
+      </http:response>
+      <http:error-response statusCode="#[vars.httpStatus default 500]">
+        <http:body>
+          #[payload]
+        </http:body>
+        <http:headers>
+          #[vars.outboundHeaders default {}]
+        </http:headers>
+      </http:error-response>
+    </http:listener>
+    <apikit:router config-ref="intelo-test-5-apikit-config" doc:name="APIKit Router" doc:id="4779f774-a587-5c83-5aa2-a371654aa044"></apikit:router>
+  </flow>
+
+  <flow name="put:\employees:application\json:intelo-test-5-apikit-config" doc:name="put:\employees:application\json:intelo-test-5-apikit-config" doc:id="13764dd5-8787-1b43-1489-8689711287e1">
+    <flow-ref doc:name="employee-update-flow" doc:id="1ce6271d-ea0f-34ef-04c0-294b9832c940" name="employee-update-flow"></flow-ref>
+  </flow>
+
+  <flow name="get:/readiness:intelo-test-5-apikit-config" doc:name="get:/readiness:intelo-test-5-apikit-config" doc:id="f4e609b2-fe12-d440-0f36-2eada9ebb657">
+    <flow-ref doc:name="readiness-check-subflow" doc:id="1d851678-63ac-744f-0995-cba8496ce507" name="readiness-check-subflow"></flow-ref>
+  </flow>
+
+</mule>

@@ -1,0 +1,14 @@
+workday:
+  userName: ""
+  password: ""
+sap:
+  username: ""
+  password: ""
+s3:
+  access:
+    key: ""
+  secret:
+    key: ""
+servicenow:
+  username: ""
+  password: ""

@@ -1,0 +1,13 @@
+{
+  "minMuleVersion": "4.4.0",
+  "secureProperties": [
+    "workday.userName",
+    "workday.password",
+    "sap.username",
+    "sap.password",
+    "s3.access.key",
+    "s3.secret.key",
+    "servicenow.username",
+    "servicenow.password"
+  ]
+}

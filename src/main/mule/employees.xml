@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+      xmlns:workday="http://www.mulesoft.org/schema/mule/workday"
+      xmlns:sap="http://www.mulesoft.org/schema/mule/sap"
+      xmlns:s3="http://www.mulesoft.org/schema/mule/s3"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core ./knowledge-base/schemas/mule-core.xsd
+        http://www.mulesoft.org/schema/mule/validation ./knowledge-base/schemas/mule-validation.xsd
+        http://www.mulesoft.org/schema/mule/workday ./knowledge-base/schemas/mule-workday.xsd
+        http://www.mulesoft.org/schema/mule/sap ./knowledge-base/schemas/mule-sap.xsd
+        http://www.mulesoft.org/schema/mule/s3 ./knowledge-base/schemas/mule-s3.xsd">
+
+  <flow name="employee-update-flow" doc:name="employee-update-flow" doc:id="employee-update-flow-001">
+    <validation:is-not-blank-string value="#[payload.employeeId]" message="employeeId cannot be blank" doc:name="Validate employeeId Not Blank" doc:id="validation-001"></validation:is-not-blank-string>
+    <set-variable variableName="originalPayload" value="#[payload]" doc:name="Store Original Payload" doc:id="set-variable-001"></set-variable>
+    <scatter-gather doc:name="Scatter-Gather Workday and SAP" doc:id="scatter-gather-001">
+      <route doc:id="doc-4d3c3763">
+        <logger level="INFO" message="Calling Workday to update compensation" doc:name="Log Workday Call" doc:id="logger-workday-001"></logger>
+        <workday:compensation config-ref="Workday_Config" operation="Put_Compensation_Plan" doc:name="Update Workday Compensation" doc:id="workday-compensation-001">
+          <workday:request doc:id="doc-ff15a37f">
+            #[vars.originalPayload]
+          </workday:request>
+        </workday:compensation>
+      </route>
+      <route doc:id="doc-6f96f944">
+        <logger level="INFO" message="Calling SAP RFC to sync cost center" doc:name="Log SAP Call" doc:id="logger-sap-001"></logger>
+        <sap:synchronous-remote-function-call config-ref="SAP_Config" key="BAPI_COSTCENTER_CREATEMULTIPLE" doc:name="SAP RFC Sync Cost Center" doc:id="sap-sync-rfc-001">
+          #[vars.originalPayload]
+        </sap:synchronous-remote-function-call>
+      </route>
+    </scatter-gather>
+    <logger level="INFO" message="Both Workday and SAP calls succeeded. Archiving to S3." doc:name="Log Success" doc:id="logger-success-001"></logger>
+    <s3:put-object config-ref="Amazon_S3_Configuration" bucketName="hr-archive" key="#['employee-update-' ++ now() as String ++ '.json']" doc:name="Archive to S3" doc:id="s3-put-object-001">
+      #[output application/json --- vars.originalPayload]
+    </s3:put-object>
+    <set-payload value="#[{ success: true, message: 'Employee update completed and archived' }]" doc:name="Set Success Response" doc:id="set-payload-001"></set-payload>
+    <error-handler ref="globalErrorHandler"></error-handler>
+  </flow>
+
+</mule>
